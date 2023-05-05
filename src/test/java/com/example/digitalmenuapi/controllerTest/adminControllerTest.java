@@ -128,6 +128,7 @@ public class adminControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/admin/available")
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON)
+                        .headers(headers)
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -154,9 +155,13 @@ public class adminControllerTest {
                 new AdminMenuItems("Spicy Lobster Sandwich", 897, "wheat, mustard, fish", false, false, 10.75, true),
                 new AdminMenuItems("Veggie Delight Sandwich", 500, "soy beans, wheat", true, true, 6.99, false));
         when(adminMenuItemsService.getAllSandwiches()).thenReturn(adminMenuItems);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBasicAuth("admin123", "staff");
+        headers.setContentType(MediaType.APPLICATION_JSON);
         String json = objectMapper.writeValueAsString(adminMenuItems);
         mockMvc.perform(MockMvcRequestBuilders.get("/admin/menuList")
                         .content(json)
+                        .headers(headers)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())

@@ -67,6 +67,7 @@ public class AdminMenuController {
    * Get request method to get all sandwiches from the menu.
    */
   @GetMapping("/menuList")
+  @PreAuthorize("hasRole('ADMIN')")
   @ResponseStatus(HttpStatus.OK)
   public List<AdminMenuItems> getAllMenuItems() {
     logger.info("Retrieved all items on the menu");
