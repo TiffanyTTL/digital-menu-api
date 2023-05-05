@@ -2,7 +2,6 @@ package com.example.digitalmenuapi.controllerTest;
 
 import com.example.digitalmenuapi.controller.AdminMenuController;
 import com.example.digitalmenuapi.model.AdminMenuItems;
-import com.example.digitalmenuapi.model.MenuItems;
 import com.example.digitalmenuapi.service.AdminMenuItemsService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
