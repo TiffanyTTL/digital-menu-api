@@ -1,6 +1,7 @@
 package com.example.digitalmenuapi.service;
 
 import com.example.digitalmenuapi.model.AdminMenuItems;
+import com.example.digitalmenuapi.model.MenuItems;
 import com.example.digitalmenuapi.repository.AdminMenuRepository;
 import java.util.List;
 import org.slf4j.Logger;
@@ -53,12 +54,18 @@ public class AdminMenuItemsService {
   }
 
   /**
-   * list all temporary unavailable sandwiches method.
+   * list all temporary available sandwiches method.
    */
-  public List<AdminMenuItems> getAllTemporaryUnavailableSandwiches() {
-    List<AdminMenuItems> menuList = adminMenuRepository.findAdminMenuItemsByAvailable(false);
-    logger.info("Retrieved all temporary unavailable sandwiches");
+  public List<AdminMenuItems> getAllTemporaryAvailableSandwiches() {
+    List<AdminMenuItems> menuList = adminMenuRepository.findAdminMenuItemsByAvailable(true);
+    logger.info("Retrieved all temporary available sandwiches");
     return menuList;
   }
 
+  /**
+   * get all menu items from the repository method.
+   */
+  public List<AdminMenuItems> getAllSandwiches() {
+    return adminMenuRepository.findAll();
+  }
 }

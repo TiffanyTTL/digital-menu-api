@@ -2,6 +2,7 @@ package com.example.digitalmenuapi.controllerTest;
 
 import com.example.digitalmenuapi.controller.AdminMenuController;
 import com.example.digitalmenuapi.model.AdminMenuItems;
+import com.example.digitalmenuapi.model.MenuItems;
 import com.example.digitalmenuapi.service.AdminMenuItemsService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -113,18 +114,18 @@ public class adminControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    public void getAllTemporaryUnavailableSandwichesInAListTest() throws Exception {
+    public void getAllTemporaryAvailableSandwichesInAListTest() throws Exception {
         List<AdminMenuItems> adminMenuItems = Arrays.asList(
                 new AdminMenuItems("Bacon Egg And Cheese Sandwich", 970,
-                        "wheat, egg, cheese, mustard", false, false, 12.50, false),
+                        "wheat, egg, cheese, mustard", false, false, 12.50, true),
                 new AdminMenuItems("Tofu crab Sandwich", 500, "soy beans, wheat", true,
-                        true, 18.50, false));
-        given(adminMenuItemsService.getAllTemporaryUnavailableSandwiches()).willReturn(adminMenuItems);
+                        true, 18.50, true));
+        given(adminMenuItemsService.getAllTemporaryAvailableSandwiches()).willReturn(adminMenuItems);
         String json = objectMapper.writeValueAsString(adminMenuItems);
         HttpHeaders headers = new HttpHeaders();
         headers.setBasicAuth("admin123", "staff");
         headers.setContentType(MediaType.APPLICATION_JSON);
-        mockMvc.perform(MockMvcRequestBuilders.get("/admin/unavailable")
+        mockMvc.perform(MockMvcRequestBuilders.get("/admin/available")
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -136,13 +137,43 @@ public class adminControllerTest {
                 .andExpect(jsonPath("$[0].vegan").value(false))
                 .andExpect(jsonPath("$[0].vegetarian").value(false))
                 .andExpect(jsonPath("$[0].price").value(12.50))
-                .andExpect(jsonPath("$[0].available").value(false))
+                .andExpect(jsonPath("$[0].available").value(true))
                 .andExpect(jsonPath("$[1].name").value("Tofu crab Sandwich"))
                 .andExpect(jsonPath("$[1].calories").value(500))
                 .andExpect(jsonPath("$[1].allergies").value("soy beans, wheat"))
                 .andExpect(jsonPath("$[1].vegan").value(true))
                 .andExpect(jsonPath("$[1].vegetarian").value(true))
                 .andExpect(jsonPath("$[1].price").value(18.50))
+                .andExpect(jsonPath("$[1].available").value(true));
+
+    }
+
+    @Test
+    public void getAllSandwichesTest() throws Exception {
+        List<AdminMenuItems> adminMenuItems = Arrays.asList(
+                new AdminMenuItems("Spicy Lobster Sandwich", 897, "wheat, mustard, fish", false, false, 10.75, true),
+                new AdminMenuItems("Veggie Delight Sandwich", 500, "soy beans, wheat", true, true, 6.99, false));
+        when(adminMenuItemsService.getAllSandwiches()).thenReturn(adminMenuItems);
+        String json = objectMapper.writeValueAsString(adminMenuItems);
+        mockMvc.perform(MockMvcRequestBuilders.get("/admin/menuList")
+                        .content(json)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].name").value("Spicy Lobster Sandwich"))
+                .andExpect(jsonPath("$[0].calories").value(897))
+                .andExpect(jsonPath("$[0].allergies").value("wheat, mustard, fish"))
+                .andExpect(jsonPath("$[0].vegan").value(false))
+                .andExpect(jsonPath("$[0].vegetarian").value(false))
+                .andExpect(jsonPath("$[0].price").value(10.75))
+                .andExpect(jsonPath("$[0].available").value(true))
+                .andExpect(jsonPath("$[1].name").value("Veggie Delight Sandwich"))
+                .andExpect(jsonPath("$[1].calories").value(500))
+                .andExpect(jsonPath("$[1].allergies").value("soy beans, wheat"))
+                .andExpect(jsonPath("$[1].vegan").value(true))
+                .andExpect(jsonPath("$[1].vegetarian").value(true))
+                .andExpect(jsonPath("$[1].price").value(6.99))
                 .andExpect(jsonPath("$[1].available").value(false));
 
     }

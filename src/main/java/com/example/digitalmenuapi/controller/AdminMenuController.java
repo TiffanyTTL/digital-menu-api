@@ -1,6 +1,7 @@
 package com.example.digitalmenuapi.controller;
 
 import com.example.digitalmenuapi.model.AdminMenuItems;
+import com.example.digitalmenuapi.model.MenuItems;
 import com.example.digitalmenuapi.service.AdminMenuItemsService;
 import java.net.URI;
 import java.util.List;
@@ -10,13 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * admin controller class.
@@ -58,14 +53,25 @@ public class AdminMenuController {
   }
 
   /**
-   * Get request method to get all temporary unavailable sandwiches from the menu.
+   * Get request method to get all temporary available sandwiches from the menu.
    */
-  @GetMapping("/unavailable")
+  @GetMapping("/available")
   @PreAuthorize("hasRole('ADMIN')")
-  public ResponseEntity<List<AdminMenuItems>> getAllTemporaryUnavailableSandwiches() {
-    logger.info("All temporary unavailable sandwiches retrieved successfully");
-    List<AdminMenuItems> menuList = adminMenuItemsService.getAllTemporaryUnavailableSandwiches();
+  public ResponseEntity<List<AdminMenuItems>> getAllTemporaryAvailableSandwiches() {
+    logger.info("All temporary available sandwiches retrieved successfully");
+    List<AdminMenuItems> menuList = adminMenuItemsService.getAllTemporaryAvailableSandwiches();
     return new ResponseEntity<>(menuList, HttpStatus.OK);
   }
+
+  /**
+   * Get request method to get all sandwiches from the menu.
+   */
+  @GetMapping("/menuList")
+  @ResponseStatus(HttpStatus.OK)
+  public List<AdminMenuItems> getAllMenuItems() {
+    logger.info("Retrieved all items on the menu");
+    return adminMenuItemsService.getAllSandwiches();
+  }
+
 }
 

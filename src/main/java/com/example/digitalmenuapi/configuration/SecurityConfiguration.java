@@ -58,6 +58,7 @@ public class SecurityConfiguration {
               .authorizeRequests()
               .requestMatchers(String.valueOf(RequestMethod.GET), "/user/menuList").permitAll()
               .requestMatchers(String.valueOf(RequestMethod.POST), "/menu/create").permitAll()
+              .requestMatchers(String.valueOf(RequestMethod.GET), "/v3/api-docs").permitAll()
               .requestMatchers(String.valueOf(RequestMethod.POST), "/admin/menu").hasRole("ADMIN")
               .requestMatchers(String.valueOf(RequestMethod.DELETE), "/admin/**").hasRole("ADMIN")
               .anyRequest().authenticated()
