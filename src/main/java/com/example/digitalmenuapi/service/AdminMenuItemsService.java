@@ -1,9 +1,10 @@
 package com.example.digitalmenuapi.service;
 
-import com.example.digitalmenuapi.model.AdminMenuItems;
-import com.example.digitalmenuapi.model.MenuItems;
+import com.example.digitalmenuapi.model.AdminMenuItem;
 import com.example.digitalmenuapi.repository.AdminMenuRepository;
 import java.util.List;
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,23 +31,24 @@ public class AdminMenuItemsService {
    * delete a menu item method.
    */
   public String deleteMenuItem(String id) {
-    try {
+    Optional<AdminMenuItem> optionalAdminMenuItem = adminMenuRepository.findById(id);
+    if (optionalAdminMenuItem.isPresent()) {
       adminMenuRepository.deleteById(id);
       logger.info("Sandwich with ID {} deleted successfully", id);
-      return "Sandwich with ID " + id + " deleted successfully";
-    } catch (EmptyResultDataAccessException e) {
+      return "Deleted successfully";
+    } else {
       logger.warn("Sandwich with ID {} not found", id);
-      return "Sandwich with ID " + id + " not found";
+      return "Sandwich with ID" + id + " not found";
     }
   }
 
   /**
    * create a sandwich method.
    */
-  public AdminMenuItems createNewSandwiches(AdminMenuItems adminMenuItems) {
+  public AdminMenuItem createNewSandwiches(AdminMenuItem adminMenuItem) {
     try {
-      logger.info("Creating new sandwich: {}", adminMenuItems);
-      return adminMenuRepository.save(adminMenuItems);
+      logger.info("Creating new sandwich: {}", adminMenuItem);
+      return adminMenuRepository.save(adminMenuItem);
     } catch (DataIntegrityViolationException e) {
       logger.error("Error creating sandwich: {}", e.getMessage());
       throw new IllegalArgumentException("Invalid sandwich data");
@@ -56,8 +58,8 @@ public class AdminMenuItemsService {
   /**
    * list all temporary available sandwiches method.
    */
-  public List<AdminMenuItems> getAllTemporaryAvailableSandwiches() {
-    List<AdminMenuItems> menuList = adminMenuRepository.findAdminMenuItemsByAvailable(true);
+  public List<AdminMenuItem> getAllTemporaryAvailableSandwiches() {
+    List<AdminMenuItem> menuList = adminMenuRepository.findAdminMenuItemsByAvailable(true);
     logger.info("Retrieved all temporary available sandwiches");
     return menuList;
   }
@@ -65,7 +67,7 @@ public class AdminMenuItemsService {
   /**
    * get all menu items from the repository method.
    */
-  public List<AdminMenuItems> getAllSandwiches() {
+  public List<AdminMenuItem> getAllSandwiches() {
     return adminMenuRepository.findAll();
   }
 }

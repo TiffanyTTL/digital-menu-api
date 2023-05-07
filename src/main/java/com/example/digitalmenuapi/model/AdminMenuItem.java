@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
  * Admin Menu Model class.
  */
 @Document(collection = "AdminMenuItems")
-public class AdminMenuItems {
+public class AdminMenuItem {
 
   @Id
   private String id;
@@ -22,9 +22,9 @@ public class AdminMenuItems {
   /**
    * Admin menu items constructor.
    */
-  public AdminMenuItems(String name, int calories, String allergies,
-                          boolean isVegan, boolean isVegetarian,
-                          double price, boolean available) {
+  public AdminMenuItem(String name, int calories, String allergies,
+                       boolean isVegan, boolean isVegetarian,
+                       double price, boolean available) {
     this.name = name;
     this.calories = calories;
     this.allergies = allergies;
@@ -34,7 +34,7 @@ public class AdminMenuItems {
     this.available = available;
   }
 
-  public AdminMenuItems() {
+  public AdminMenuItem() {
 
   }
 

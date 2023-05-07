@@ -1,8 +1,7 @@
 package com.example.digitalmenuapi.controllerTest;
 
 import com.example.digitalmenuapi.controller.AdminMenuController;
-import com.example.digitalmenuapi.model.AdminMenuItems;
-import com.example.digitalmenuapi.model.MenuItems;
+import com.example.digitalmenuapi.model.AdminMenuItem;
 import com.example.digitalmenuapi.service.AdminMenuItemsService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,21 +54,21 @@ public class adminControllerTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     public void createNewSandwichesTest() throws Exception {
-        AdminMenuItems adminMenuItems = new AdminMenuItems();
-        adminMenuItems.setId("6454aa815f859e3504b2ec75");
-        adminMenuItems.setName("Sweet Chilli Sandwich");
-        adminMenuItems.setCalories(1300);
-        adminMenuItems.setAllergies("wheat, poultry, chicken");
-        adminMenuItems.setPrice(9.50);
-        adminMenuItems.setAvailable(true);
-        adminMenuItems.setVegan(false);
-        adminMenuItems.setVegetarian(false);
-        when(adminMenuItemsService.createNewSandwiches(any(AdminMenuItems.class))).thenReturn(adminMenuItems);
-        String json = objectMapper.writeValueAsString(adminMenuItems);
+        AdminMenuItem adminMenuItem = new AdminMenuItem();
+        adminMenuItem.setId("6454aa815f859e3504b2ec75");
+        adminMenuItem.setName("Sweet Chilli Sandwich");
+        adminMenuItem.setCalories(1300);
+        adminMenuItem.setAllergies("wheat, poultry, chicken");
+        adminMenuItem.setPrice(9.50);
+        adminMenuItem.setAvailable(true);
+        adminMenuItem.setVegan(false);
+        adminMenuItem.setVegetarian(false);
+        when(adminMenuItemsService.createNewSandwiches(any(AdminMenuItem.class))).thenReturn(adminMenuItem);
+        String json = objectMapper.writeValueAsString(adminMenuItem);
         HttpHeaders headers = new HttpHeaders();
-        headers.setBasicAuth("admin123", "staff");
+        headers.setBasicAuth("admin", "staff123");
         headers.setContentType(MediaType.APPLICATION_JSON);
-        mockMvc.perform(post("/admin/menu")
+        mockMvc.perform(post("/admin/createMenu")
                         .accept(MediaType.APPLICATION_JSON)
                         .headers(headers)
                         .content(json)
@@ -88,42 +87,42 @@ public class adminControllerTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     public void deleteMenuItemFromDatabase() throws Exception {
-            AdminMenuItems adminMenuItems2 = new AdminMenuItems();
-            adminMenuItems2.setId("6454d1411fc1e574b1439688");
-            adminMenuItems2.setName("Tofu Steak Sandwich");
-            adminMenuItems2.setCalories(1300);
-            adminMenuItems2.setAllergies("wheat, poultry, chicken");
-            adminMenuItems2.setPrice(9.50);
-            adminMenuItems2.setAvailable(true);
-            adminMenuItems2.setVegan(false);
-            adminMenuItems2.setVegetarian(false);
-            when(adminMenuItemsService.deleteMenuItem("6454d1411fc1e574b1439688")).thenReturn("Deleted successfully");
-            String json = objectMapper.writeValueAsString(adminMenuItems2);
-            HttpHeaders headers = new HttpHeaders();
-            headers.setBasicAuth("admin123", "staff");
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            mockMvc.perform(delete("/admin")
-                            .param("id", "6454d1411fc1e574b1439688")
-                            .accept(MediaType.APPLICATION_JSON)
-                            .headers(headers)
-                            .content(json)
-                            .contentType(MediaType.APPLICATION_JSON))
-                    .andDo(print())
-                    .andExpect(status().isOk());
-        }
+        AdminMenuItem adminMenuItem2 = new AdminMenuItem();
+        adminMenuItem2.setId("6454d1411fc1e574b1439688");
+        adminMenuItem2.setName("Tofu Steak Sandwich");
+        adminMenuItem2.setCalories(1300);
+        adminMenuItem2.setAllergies("wheat, poultry, chicken");
+        adminMenuItem2.setPrice(9.50);
+        adminMenuItem2.setAvailable(true);
+        adminMenuItem2.setVegan(false);
+        adminMenuItem2.setVegetarian(false);
+        when(adminMenuItemsService.deleteMenuItem("6454d1411fc1e574b1439688")).thenReturn("Deleted successfully");
+        String json = objectMapper.writeValueAsString(adminMenuItem2);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBasicAuth("admin", "staff123");
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        mockMvc.perform(delete("/admin")
+                        .param("id", "6454d1411fc1e574b1439688")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .headers(headers)
+                        .content(json)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
 
     @Test
     @WithMockUser(roles = "ADMIN")
     public void getAllTemporaryAvailableSandwichesInAListTest() throws Exception {
-        List<AdminMenuItems> adminMenuItems = Arrays.asList(
-                new AdminMenuItems("Bacon Egg And Cheese Sandwich", 970,
+        List<AdminMenuItem> adminMenuItems = Arrays.asList(
+                new AdminMenuItem("Bacon Egg And Cheese Sandwich", 970,
                         "wheat, egg, cheese, mustard", false, false, 12.50, true),
-                new AdminMenuItems("Tofu crab Sandwich", 500, "soy beans, wheat", true,
+                new AdminMenuItem("Tofu crab Sandwich", 500, "soy beans, wheat", true,
                         true, 18.50, true));
         given(adminMenuItemsService.getAllTemporaryAvailableSandwiches()).willReturn(adminMenuItems);
         String json = objectMapper.writeValueAsString(adminMenuItems);
         HttpHeaders headers = new HttpHeaders();
-        headers.setBasicAuth("admin123", "staff");
+        headers.setBasicAuth("admin", "staff123");
         headers.setContentType(MediaType.APPLICATION_JSON);
         mockMvc.perform(MockMvcRequestBuilders.get("/admin/available")
                         .content(json)
@@ -150,13 +149,14 @@ public class adminControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     public void getAllSandwichesTest() throws Exception {
-        List<AdminMenuItems> adminMenuItems = Arrays.asList(
-                new AdminMenuItems("Spicy Lobster Sandwich", 897, "wheat, mustard, fish", false, false, 10.75, true),
-                new AdminMenuItems("Veggie Delight Sandwich", 500, "soy beans, wheat", true, true, 6.99, false));
+        List<AdminMenuItem> adminMenuItems = Arrays.asList(
+                new AdminMenuItem("Spicy Lobster Sandwich", 897, "wheat, mustard, fish", false, false, 10.75, true),
+                new AdminMenuItem("Veggie Delight Sandwich", 500, "soy beans, wheat", true, true, 6.99, false));
         when(adminMenuItemsService.getAllSandwiches()).thenReturn(adminMenuItems);
         HttpHeaders headers = new HttpHeaders();
-        headers.setBasicAuth("admin123", "staff");
+        headers.setBasicAuth("admin", "staff123");
         headers.setContentType(MediaType.APPLICATION_JSON);
         String json = objectMapper.writeValueAsString(adminMenuItems);
         mockMvc.perform(MockMvcRequestBuilders.get("/admin/menuList")
@@ -182,6 +182,6 @@ public class adminControllerTest {
                 .andExpect(jsonPath("$[1].available").value(false));
 
     }
-    }
+}
 
 

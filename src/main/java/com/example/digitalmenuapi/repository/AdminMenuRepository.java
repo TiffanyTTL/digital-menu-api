@@ -1,6 +1,6 @@
 package com.example.digitalmenuapi.repository;
 
-import com.example.digitalmenuapi.model.AdminMenuItems;
+import com.example.digitalmenuapi.model.AdminMenuItem;
 import java.util.List;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 /**
  * Admin menu repository class.
  */
-public interface AdminMenuRepository extends MongoRepository<AdminMenuItems, String> {
+public interface AdminMenuRepository extends MongoRepository<AdminMenuItem, String> {
 
-  List<AdminMenuItems> findAdminMenuItemsByAvailable(boolean available);
+  List<AdminMenuItem> findAdminMenuItemsByAvailable(boolean available);
 }
