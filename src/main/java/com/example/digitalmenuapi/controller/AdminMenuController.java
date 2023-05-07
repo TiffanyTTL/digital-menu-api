@@ -55,9 +55,6 @@ public class AdminMenuController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(deleteMenuItemStatus);
       }
     }
-//    adminMenuItemsService.deleteMenuItem(id);
-//    return ResponseEntity.ok().body("Deleted successfully");
-//  }
 
   /**
    * Get request method to get all temporary available sandwiches from the menu.
