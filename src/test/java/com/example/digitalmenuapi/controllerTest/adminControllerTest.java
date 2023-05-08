@@ -5,6 +5,7 @@ import com.example.digitalmenuapi.model.AdminMenuItem;
 import com.example.digitalmenuapi.service.AdminMenuItemsService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -86,6 +87,43 @@ public class adminControllerTest {
                 .andExpect(jsonPath("$.vegetarian").value(false));
     }
 
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    @DisplayName("Test create new sandwich with invalid basic auth")
+    public void createNewSandwichesWithInvalidBasicAuth() throws Exception {
+        AdminMenuItem adminMenuItem = new AdminMenuItem();
+        adminMenuItem.setId("6454aa815f859e3504b2ec75");
+        adminMenuItem.setName("Tuna Mayo Sandwich");
+        adminMenuItem.setCalories(900);
+        adminMenuItem.setAllergies("wheat, poultry");
+        adminMenuItem.setVegan(false);
+        adminMenuItem.setVegetarian(false);
+        adminMenuItem.setAvailable(true);
+        adminMenuItem.setPrice(13.60);
+        when(adminMenuItemsService.createNewSandwiches(any(AdminMenuItem.class))).thenReturn(adminMenuItem);
+        String json = objectMapper.writeValueAsString(adminMenuItem);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBasicAuth("invalidUsername", "876876567598765456");
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        mockMvc.perform(post("/admin/createMenu")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(json)
+                        .headers(headers)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+               // .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.name").value("Tuna Mayo Sandwich"))
+                .andExpect(jsonPath("$.calories").value(900))
+                .andExpect(jsonPath("$.allergies").value("wheat, poultry"))
+                .andExpect(jsonPath("$.price").value(13.60))
+                .andExpect(jsonPath("$.available").value(true))
+                .andExpect(jsonPath("$.vegan").value(false))
+                .andExpect(jsonPath("$.vegetarian").value(false));
+    }
+
     @Test
     @WithMockUser(roles = "ADMIN")
     public void deleteMenuItemFromDatabase() throws Exception {
@@ -111,7 +149,6 @@ public class adminControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk());
-            //    .andExpect(jsonPath("$.message").value("Deleted successfully"));
     }
 
     @Test

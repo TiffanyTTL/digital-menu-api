@@ -19,11 +19,12 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.request.RequestContextHolder;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -74,5 +75,13 @@ public class userMenuItemControllerTest {
                 .andExpect(jsonPath("$[1].vegetarian").value(true))
                 .andExpect(jsonPath("$[1].price").value(6.99));
 
+    }
+
+    @Test
+    public void testGetAllMenuItems_NoItemsFound() throws Exception {
+        when(menuItemsService.getAllMenuItems()).thenReturn(Collections.emptyList());
+        mockMvc.perform(get("/user/menuList"))
+                .andExpect(status().isOk())
+                .andExpect(content().json("[]"));
     }
 }

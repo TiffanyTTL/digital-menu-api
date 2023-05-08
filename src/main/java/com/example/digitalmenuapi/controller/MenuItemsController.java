@@ -38,6 +38,7 @@ public class MenuItemsController {
   public ResponseEntity<String> createSandwiches(@RequestBody MenuItems menuItems) {
     logger.info("Sandwich created successfully");
     MenuItems createdMenuItem = menuItemsService.createSandwiches(menuItems);
+    logger.error("Error creating sandwich");
     return ResponseEntity.status(HttpStatus.CREATED).body("Sandwich created successfully");
   }
 }
