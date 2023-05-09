@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -29,6 +30,7 @@ public class SecurityConfiguration {
   public static PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
   }
+
 
 
   /**
@@ -58,7 +60,9 @@ public class SecurityConfiguration {
               .authorizeRequests()
               .requestMatchers(String.valueOf(RequestMethod.GET), "/user/menuList").permitAll()
               .requestMatchers(String.valueOf(RequestMethod.POST), "/menu/create").permitAll()
-              .requestMatchers(String.valueOf(RequestMethod.GET), "/v3/api-docs").permitAll()
+              .requestMatchers(String.valueOf(RequestMethod.GET), "/v3/api-docs/**",
+                      "/swagger-ui/**",
+                      "/swagger-ui.html").permitAll()
               .requestMatchers(String.valueOf(RequestMethod.POST), "/admin/menu").hasRole("ADMIN")
               .requestMatchers(String.valueOf(RequestMethod.DELETE), "/admin/**").hasRole("ADMIN")
               .anyRequest().authenticated()
@@ -68,6 +72,7 @@ public class SecurityConfiguration {
               .csrf().disable();
     return http.build();
   }
+
 
 }
 
