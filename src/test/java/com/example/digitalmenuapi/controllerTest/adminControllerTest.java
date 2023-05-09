@@ -27,6 +27,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -111,10 +112,9 @@ public class adminControllerTest {
         mockMvc.perform(post("/admin/createMenu")
                         .accept(MediaType.APPLICATION_JSON)
                         .content(json)
-                        .headers(headers)
+                        .with(httpBasic("invalidUsername", "876876567598765456"))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-               // .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.name").value("Tuna Mayo Sandwich"))
                 .andExpect(jsonPath("$.calories").value(900))
                 .andExpect(jsonPath("$.allergies").value("wheat, poultry"))
