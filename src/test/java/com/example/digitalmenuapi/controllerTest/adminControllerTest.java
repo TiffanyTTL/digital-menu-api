@@ -2,8 +2,10 @@ package com.example.digitalmenuapi.controllerTest;
 
 import com.example.digitalmenuapi.controller.AdminMenuController;
 import com.example.digitalmenuapi.model.AdminMenuItem;
+import com.example.digitalmenuapi.repository.AdminMenuRepository;
 import com.example.digitalmenuapi.service.AdminMenuItemsService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.jsonpath.internal.Utils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,11 +20,14 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import org.webjars.NotFoundException;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
@@ -50,6 +55,9 @@ public class adminControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private AdminMenuRepository adminMenuRepository;
+
     @BeforeEach
     public void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(adminMenuController).build();
@@ -67,7 +75,7 @@ public class adminControllerTest {
         adminMenuItem.setAvailable(true);
         adminMenuItem.setVegan(false);
         adminMenuItem.setVegetarian(false);
-        when(adminMenuItemsService.createNewSandwiches(any(AdminMenuItem.class))).thenReturn(adminMenuItem);
+       when(adminMenuItemsService.createNewSandwiches(any(AdminMenuItem.class))).thenReturn(adminMenuItem);
         String json = objectMapper.writeValueAsString(adminMenuItem);
         HttpHeaders headers = new HttpHeaders();
         headers.setBasicAuth("admin", "staff123");
@@ -86,7 +94,11 @@ public class adminControllerTest {
                 .andExpect(jsonPath("$.available").value(true))
                 .andExpect(jsonPath("$.vegan").value(false))
                 .andExpect(jsonPath("$.vegetarian").value(false));
+
+
     }
+
+
 
 
     @Test
@@ -112,6 +124,7 @@ public class adminControllerTest {
         mockMvc.perform(post("/admin/createMenu")
                         .accept(MediaType.APPLICATION_JSON)
                         .content(json)
+                        .headers(headers)
                         .with(httpBasic("invalidUsername", "876876567598765456"))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
