@@ -7,11 +7,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * Menu items controller class.
@@ -23,7 +21,7 @@ public class MenuItemsController {
   @Autowired
   MenuItemsService menuItemsService;
 
-  public MenuItemsController(MenuItemsService menuItemsService)  {
+  public MenuItemsController(MenuItemsService menuItemsService) {
     this.menuItemsService = menuItemsService;
   }
 
@@ -39,6 +37,17 @@ public class MenuItemsController {
     logger.info("Sandwich created successfully");
     MenuItems createdMenuItem = menuItemsService.createSandwiches(menuItems);
     return ResponseEntity.status(HttpStatus.CREATED).body("Sandwich created successfully");
+  }
+
+  @GetMapping("/list")
+  @ResponseStatus(HttpStatus.OK)
+  public List<MenuItems> getFilteredSandwiches(@RequestParam(required = false) boolean vegan,
+                                          @RequestParam(required = false) boolean vegetarian,
+                                          @RequestParam(required = false) Integer calories,
+                                          @RequestParam(required = false) Double price,
+                                          @RequestParam(required = false) String allergies) {
+    return menuItemsService.getSandwichesByFilter(vegan, vegetarian, calories, price, allergies);
+
   }
 }
 
