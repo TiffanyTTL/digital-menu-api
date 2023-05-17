@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,18 +17,21 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -79,51 +83,27 @@ public class menuControllerTest {
                 .andExpect(content().string(notNullValue()));
     }
 
-        @Test
-        void testGetSandwichesByCriteria() throws Exception {
-            // mock the service response
-            List<MenuItems> sandwiches = Arrays.asList(
-                    new MenuItems( "Veggie Delight",700,"wheat,mustard",true,true,9.00 ),
-                    new MenuItems( "BLT wrap",900,"poultry,diary",false,false,12.00 ),
-                    new MenuItems( "Tomato and cheese",500,"diary,mustard",false,true,9.00 ));
+    @Test
+    void testGetSandwichesByCriteria() throws Exception {
+        // mock the service response
+        List<MenuItems> sandwiches = new ArrayList<>();
+               sandwiches.add(new MenuItems("Veggie Delight", 700, "wheat,mustard", true, true, 9.00));
+               sandwiches.add(new MenuItems("BLT wrap", 1200, "poultry,diary", false, false, 12.00));
+               sandwiches.add(new MenuItems("Tomato and cheese", 500, "diary,mustard", false, true, 9.00));
+        when(menuItemsService.getSandwichesByFilter(true, true, 1000, 12.00, "poultry,diary")).thenReturn(sandwiches);
+        // perform the request
+         mockMvc.perform(MockMvcRequestBuilders.get("/menu/list")
+                        .param("vegan", "true")
+                        .param("vegetarian", "true")
+                        .param("calories", "1000")
+                        .param("allergy", "poultry,diary")
+                        .param("price", "12.00")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].name").value("Veggie Delight"))
+                .andExpect(jsonPath("$[2].name").value("Tomato and cheese"));
 
 
-            // perform the request
-            String url = "/sandwiches?allergies=Wheat&vegan=false&vegetarian=true&maxCalories=1000&maxPrice=10";
-            mockMvc.perform(post("/menu/list")
-                            .accept(MediaType.APPLICATION_JSON)
-                            .content(url)
-                            .contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(jsonPath("$.[0].name").value("Veggie Delight"))
-                    .andExpect(jsonPath("$.[0].allergies").value("wheat,mustard"))
-                    .andExpect(jsonPath("$.[0].vegan").value(true))
-                    .andExpect(jsonPath("$.[0].vegetarian").value(true))
-                    .andExpect(jsonPath("$.[0].calories").value(700))
-                    .andExpect(jsonPath("$.[0].price").value(8.99))
-                    .andExpect(jsonPath("$.[1].id").value("2"))
-                    .andExpect(jsonPath("$.[1].name").value("Tuna Melt"))
-                    .andExpect(jsonPath("$.[1].allergies").doesNotExist())
-                    .andExpect(jsonPath("$.[1].vegan").value(false))
-                    .andExpect(jsonPath("$.[1].vegetarian").value(false))
-                    .andExpect(jsonPath("$.[1].calories").value(850))
-                    .andExpect(jsonPath("$.[1].price").value(9.99))
-                    .andExpect(jsonPath("$.[2].id").value("3"))
-                    .andExpect(jsonPath("$.[2].name").value("Turkey Club"))
-                    .andExpect(jsonPath("$.[2].allergies").doesNotExist())
-                    .andExpect(jsonPath("$.[2].vegan").value(false))
-                    .andExpect(jsonPath("$.[2].vegetarian").value(false))
-                    .andExpect(jsonPath("$.[2].calories").value(1000))
-                    .andExpect(jsonPath("$.[2].price").value(10.99));
-
-            // verify the service call
-            ArgumentCaptor<SandwichCriteria> argumentCaptor = ArgumentCaptor.forClass(SandwichCriteria.class);
-            verify(sandwichService).getSandwichesByCriteria(argumentCaptor.capture());
-            SandwichCriteria capturedCriteria = argumentCaptor.getValue();
-            assertThat(capturedCriteria.getAllergies()).isEqualTo("Wheat");
-            assertThat(capturedCriteria.isVegan()).isFalse();
-            assertThat(capturedCriteria.isVegetarian()).isTrue();
-            assertThat(capturedCriteria.getMaxCalories()).isEqualTo(1000);
-            assertThat(capturedCriteria.getMaxPrice()).isEqualByComparingTo
-
-
-        }
+    }
+}

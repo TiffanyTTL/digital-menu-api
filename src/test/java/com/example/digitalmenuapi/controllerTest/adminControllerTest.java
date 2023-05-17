@@ -111,7 +111,6 @@ public class adminControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk());
-            //    .andExpect(jsonPath("$.message").value("Deleted successfully"));
     }
 
     @Test

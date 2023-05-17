@@ -2,14 +2,12 @@ package com.example.digitalmenuapi.service;
 
 import com.example.digitalmenuapi.model.MenuItems;
 import com.example.digitalmenuapi.repository.MenuItemsRepository;
-
 import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 
@@ -49,21 +47,34 @@ public class MenuItemsService {
     }
   }
 
-    public List<MenuItems> getSandwichesByFilter(boolean vegan, boolean vegetarian, Integer calories, Double price,  String allergies) {
+  /**
+   * get sandwich by filters.
+   *
+   */
+
+  public List<MenuItems> getSandwichesByFilter(boolean vegan, boolean vegetarian,
+                                               Integer calories, Double price,
+                                               String allergies) {
     List<MenuItems> sandwiches = new ArrayList<>();
-      if (vegan) {
-        sandwiches.addAll(menuItemsRepository.findMenuItemsByVegan(true));
-      }  if (vegetarian) {
-        sandwiches.addAll(menuItemsRepository.findMenuItemsByVegetarian(true));
-      } if (calories < 1000) {
-        sandwiches.addAll(menuItemsRepository.findMenuItemsByCaloriesLessThan(calories));
-      }  if (price > 0) {
-        sandwiches.addAll(menuItemsRepository.findMenuItemsByPriceLessThan(price));
-      } if (allergies != null && !allergies.isBlank()) {
-        sandwiches.addAll(menuItemsRepository.findMenuItemsByAllergiesNotContaining(allergies));
-      }
-        return sandwiches;
-      }
+    if (vegan) {
+      sandwiches.addAll(menuItemsRepository.findMenuItemsByVegan(true));
     }
+    if (vegetarian) {
+      sandwiches.addAll(menuItemsRepository.findMenuItemsByVegetarian(true));
+    }
+    if (calories < 1000) {
+      sandwiches.addAll(menuItemsRepository.findMenuItemsByCaloriesLessThan(calories));
+    }
+    if (price > 0) {
+      sandwiches.addAll(menuItemsRepository.findMenuItemsByPriceLessThan(price));
+    }
+    if (allergies != null && !allergies.isBlank()) {
+      sandwiches.addAll(menuItemsRepository.findMenuItemsByAllergiesNotContaining(allergies));
+    }
+    return sandwiches;
+  }
+
+}
+
 
 
