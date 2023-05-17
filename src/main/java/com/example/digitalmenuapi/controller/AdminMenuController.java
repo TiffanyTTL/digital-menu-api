@@ -40,11 +40,10 @@ public class AdminMenuController {
    */
   @PostMapping("/createMenu")
   @PreAuthorize("hasRole('ADMIN')")
-  public ResponseEntity<AdminMenuItem> addItemToMenu(@RequestBody AdminMenuItem adminMenuItem) {
+  public ResponseEntity<String> addItemToMenu(@RequestBody AdminMenuItem adminMenuItem) {
     AdminMenuItem addedMenu = adminMenuItemsService.createNewSandwiches(adminMenuItem);
     logger.info("Sandwich created successfully");
-    return ResponseEntity.created(URI.create("admin/createMenu/"
-            + addedMenu.getId())).body(addedMenu);
+    return ResponseEntity.status(HttpStatus.CREATED).body("Sandwich added to the menu");
   }
 
   /**
@@ -63,18 +62,6 @@ public class AdminMenuController {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body(deleteMenuItemStatus);
     }
   }
-
-  /**
-   * Get request method to get all temporary available sandwiches from the menu.
-   */
-  @GetMapping("/available")
-  @PreAuthorize("hasRole('ADMIN')")
-  public ResponseEntity<List<AdminMenuItem>> getAllTemporaryAvailableSandwiches() {
-    logger.info("All temporary available sandwiches retrieved successfully");
-    List<AdminMenuItem> menuList = adminMenuItemsService.getAllTemporaryAvailableSandwiches();
-    return new ResponseEntity<>(menuList, HttpStatus.OK);
-  }
-
   /**
    * Get request method to get all sandwiches from the menu.
    */

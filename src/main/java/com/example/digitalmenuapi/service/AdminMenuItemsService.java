@@ -53,19 +53,13 @@ public class AdminMenuItemsService {
     }
   }
 
-  /**
-   * list all temporary available sandwiches method.
-   */
-  public List<AdminMenuItem> getAllTemporaryAvailableSandwiches() {
-    List<AdminMenuItem> menuList = adminMenuRepository.findAdminMenuItemsByAvailable(true);
-    logger.info("Retrieved all temporary available sandwiches");
-    return menuList;
-  }
 
   /**
    * get all menu items from the repository method.
    */
   public List<AdminMenuItem> getAllSandwiches() {
-    return adminMenuRepository.findAll();
+    List<AdminMenuItem> menuList = adminMenuRepository.findAdminMenuItemsByAvailable(true);
+    logger.info("Retrieved all temporary available sandwiches");
+    return menuList;
   }
 }
